@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+
+require "replay_load"
+
+ReplayLoad::CLI.start(ARGV)
