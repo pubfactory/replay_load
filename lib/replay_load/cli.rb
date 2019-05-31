@@ -130,7 +130,7 @@ module ReplayLoad
 			sessions.map do |session|
 				session.populate 
 			end
-			sessions.reject do |session|
+			sessions.reject! do |session|
 				session.requests.length == 0
 			end
 			puts <<~EOF
