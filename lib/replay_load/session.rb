@@ -45,15 +45,19 @@ module ReplayLoad
 			container[:enabled] = true
 			fragment.add_child container
 			fragment.add_child hashtree
-			
+		
+#			i = 0
 			@requests.each do |request|
+#				puts request.inspect
 				sample = Jmeter::HttpSampler.new
 				sample.path = request['_source']['request']['uri']
 				sample[:testname] = request['_source']['request']['uri']
 				sample.method = request['_source']['request']['method']
+				sample.ip_source = request['_source']['request']['ip'];
 				
 				hashtree.add_child sample
 				hashtree.add_child Nokogiri::XML::Element.new 'hashTree', Jmeter::DOCUMENT
+#				break if i > 3
 			end
 			fragment
 		end

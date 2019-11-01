@@ -7,7 +7,7 @@ module ReplayLoad
 		def self.exit_on_failure?; true; end
 		
 		@@start_date = '2019-03-01T12:00:00.000Z'
-		@@end_date   = '2019-03-01T12:01:00.000Z'
+		@@end_date   = '2019-03-01T12:00:30.000Z'
 
 		desc 'health', 'get cluster health'			
 		def health
@@ -183,6 +183,7 @@ module ReplayLoad
 									<stringProp name="HTTPSampler.protocol">https</stringProp>
 									<stringProp name="HTTPSampler.contentEncoding"></stringProp>
 									<stringProp name="HTTPSampler.path"></stringProp>
+									<stringProp name="HTTPSampler.ipSource"></stringProp>
 									<boolProp name="HTTPSampler.image_parser">true</boolProp>
 									<boolProp name="HTTPSampler.concurrentDwn">true</boolProp>
 									<stringProp name="HTTPSampler.concurrentPool">10</stringProp>
