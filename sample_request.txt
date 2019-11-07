@@ -5,24 +5,26 @@
  "_type"=>"doc",
  "_id"=>"VHUSVWoBQt2OrsKvbaqm",
  "_score"=>nil, "_source"=>{"session"=>{"auth"=>{"account-ids"=>["2006"]}, "jsessionid"=>"0AEDC8712983C221503FB07D8284091E"}, "offset"=>429049691, "tags"=>["beats_input_code
-c_plain_applied"], "request"=>{"method"=>"GET",
- "referrer"=>"https://plus.orbis-oldenburg.de/primo_library/libweb/action/search.do?cs=frb&ct=frb&frbg=165941343&fctN=facet_frbrgroupid&fctV=165941343&doc=49GBVLBO_ALMA21130513410003502&lastPag=&lastPagIndx=1&rfnGrp=f
-rbr&frbrSrt=date&frbrRecordsSource=Primo+Local&frbrJtitleDisplay=&frbrIssnDisplay=&frbrEissnDisplay=&frbrSourceidDisplay=49GBVLBO_ALMA&frbg=&&indx=1&fn=search&vl(1UI0)=contains&dscnt=0&scp.scps=scope%3A(%22JBW%22)%2Cscope%3A(JBE)%2Cscope%3A(%22LB%22)%2Cscope%3A(JB
-O)%2Cscope%3A(UB)%2Cscope%3A(BKGE)%2Cprimo_central_multiple_fe&vl(81095792UI0)=any&mode=Basic&vid=ORB_V2&ct=search&srt=rank&tab=default_tab&vl(332551973UI1)=all_items&dum=true&vl(freeText0)=Marszalek%2C%20Magdalena%2C%20Werner%20Nell%20und%20Marc%20Weiland%20(Hg.)
-%3A%20%C3%9Cber%20Land.%20Aktuelle%20literatur-%20und%20kulturwissenschaftliche%20Perspektiven%20auf%20Dorf%20und%20L%C3%A4ndlichkeit.%20Bielefeld%202017.&dstmp=1551444069134",
- "uri"=>"/openurl?genre=book&isbn=9783839440506",
- "ip"=>"134.106.187.225",
- "http-version
-"=>"HTTP/1.1",
- "timestamp"=>"01/Mar/2019:13:41:57 +0100"}, "client"=>{"user-agent"=>"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.119 Safari/537.36",
- "bot-classification"=>"NOT_A_BOT",
- "mobile-device"=>false}, "
-@timestamp"=>"2019-03-01T12:41:57.000Z",
- "host"=>{"name"=>"hephaestus"}, "source"=>"/home/whirsch/DGSG-1035/web-13/tomcat7/requests.2019-03-01.txt",
- "server"=>{"virtual-host"=>"www.degruyter.com"}, "fileset"=>{"module"=>"pubfactory",
- "name"=>"requests"}, "input"=>
-{"type"=>"log"}, "@version"=>"1",
- "response"=>{"code"=>"302"}, "prospector"=>{"type"=>"log"}, "beat"=>{"hostname"=>"hephaestus",
- "version"=>"6.7.1",
- "name"=>"hephaestus"}, "log"=>{"format"=>{"version"=>"V1"}, "file"=>{"path"=>"/home/whirsch/DGSG-1035/web-13/tomcat
-7/requests.2019-03-01.txt"}}, "site"=>{"uuid"=>"97786823761199111"}}, "sort"=>[1551444117000, 429049691]}
+c_plain_applied"], 
+"request"=>
+   {"method"=>"GET",
+    "referrer"=>"https://plus.orbis-oldenburg.de/primo_library/libweb/action/search.do?cs=frb&ct=frb&frbg=165941343&fctN=facet_frbrgroupid&fctV=165941343&doc=49GBVLBO_ALMA21130513410003502&lastPag=&lastPagIndx=1&rfnGrp=frbr&frbrSrt=date&frbrRecordsSource=Primo+Local&frbrJtitleDisplay=&frbrIssnDisplay=&frbrEissnDisplay=&frbrSourceidDisplay=49GBVLBO_ALMA&frbg=&&indx=1&fn=search&vl(1UI0)=contains&dscnt=0&scp.scps=scope%3A(%22JBW%22)%2Cscope%3A(JBE)%2Cscope%3A(%22LB%22)%2Cscope%3A(JBO)%2Cscope%3A(UB)%2Cscope%3A(BKGE)%2Cprimo_central_multiple_fe&vl(81095792UI0)=any&mode=Basic&vid=ORB_V2&ct=search&srt=rank&tab=default_tab&vl(332551973UI1)=all_items&dum=true&vl(freeText0)=Marszalek%2C%20Magdalena%2C%20Werner%20Nell%20und%20Marc%20Weiland%20(Hg.)%3A%20%C3%9Cber%20Land.%20Aktuelle%20literatur-%20und%20kulturwissenschaftliche%20Perspektiven%20auf%20Dorf%20und%20L%C3%A4ndlichkeit.%20Bielefeld%202017.&dstmp=1551444069134",
+    "uri"=>"/openurl?genre=book&isbn=9783839440506",
+    "ip"=>"134.106.187.225",
+    "http-version"=>"HTTP/1.1",
+    "timestamp"=>"01/Mar/2019:13:41:57 +0100"}, 
+ "client"=>{"user-agent"=>"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.119 Safari/537.36",
+    "bot-classification"=>"NOT_A_BOT",
+    "mobile-device"=>false}, 
+ "@timestamp"=>"2019-03-01T12:41:57.000Z",
+ "host"=>{"name"=>"hephaestus"}, 
+ "source"=>"/home/whirsch/DGSG-1035/web-13/tomcat7/requests.2019-03-01.txt",
+ "server"=>{"virtual-host"=>"www.degruyter.com"},
+ "fileset"=>{"module"=>"pubfactory",
+    "name"=>"requests"},
+ "input"=>
+    {"type"=>"log"}, "@version"=>"1",
+    "response"=>{"code"=>"302"}, "prospector"=>{"type"=>"log"}, "beat"=>{"hostname"=>"hephaestus",
+    "version"=>"6.7.1",
+    "name"=>"hephaestus"}, 
+"log"=>{"format"=>{"version"=>"V1"}, "file"=>{"path"=>"/home/whirsch/DGSG-1035/web-13/tomcat7/requests.2019-03-01.txt"}}, "site"=>{"uuid"=>"97786823761199111"}}, "sort"=>[1551444117000, 429049691]}
