@@ -59,5 +59,23 @@ module ReplayLoad
 			end
 			fragment
 		end
+
+		def to_csv
+			fragment = ""
+			@requests.each do |request|
+				fragment << "https://new.degruyter.com"
+				fragment << request['_source']['request']['uri']
+				fragment << ","
+				fragment <<  request['_source']['request']['method']
+				fragment << ","
+				fragment <<  request['_source']['request']['ip'];
+				fragment << ","
+				fragment <<  request['_source']['@timestamp'];
+				fragment << ","
+				fragment << @jsessionid
+				fragment << "\n"
+			end
+			fragment
+		end
 	end
 end

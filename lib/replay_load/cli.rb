@@ -133,6 +133,8 @@ module ReplayLoad
 			sessions.reject! do |session|
 				session.requests.length == 0
 			end
+
+			# Field names defined at https://jmeter.apache.org/api/constant-values.html#org.apache.jmeter.protocol.http.sampler.HTTPSamplerBase
 			puts <<~EOF
 				<?xml version="1.0" encoding="UTF-8"?>
 				<jmeterTestPlan version="1.2" properties="4.0" jmeter="4.0 r1823414">
@@ -203,7 +205,8 @@ module ReplayLoad
 								<hashTree>
 			EOF
 			sessions.each do |session|
-				puts session.to_jmx
+#				puts session.to_jmx
+				puts session.to_csv
 			end
 			puts <<~EOF
 								</hashTree>
