@@ -1,5 +1,6 @@
 require 'jmeter'
 require 'nokogiri'
+require 'date'
 
 module ReplayLoad
 	class Session
@@ -19,9 +20,9 @@ module ReplayLoad
 							must: [
 								{ term: { 'session.jsessionid.keyword' => @jsessionid } },
 							],
-							must_not: [
-								{ regexp: { 'request.uri.keyword' => '.*\\.(png|jpg|gif|ico|css|js)' } },
-							],
+							#must_not: [
+							#	{ regexp: { 'request.uri.keyword' => '.*\\.(png|jpg|gif|ico|css|js)' } },
+							#],
 						},
 					},
 					sort: [
@@ -52,8 +53,8 @@ module ReplayLoad
 				sample[:testname] = request['_source']['request']['uri']
 				sample.method = request['_source']['request']['method']
 				sample.ip_source = request['_source']['request']['ip'];
+				# CHECKED HERE
 				sample[:timestamp] = request['_source']['@timestamp'];
-				
 				hashtree.add_child sample
 				hashtree.add_child Nokogiri::XML::Element.new 'hashTree', Jmeter::DOCUMENT
 			end
@@ -63,14 +64,18 @@ module ReplayLoad
 		def to_csv
 			fragment = ""
 			@requests.each do |request|
-				fragment << "https://new.degruyter.com"
+				initial_timestamp = request['_source']['@timestamp'];
+				datetime = DateTime.strptime(initial_timestamp,'%Y-%m-%dT%H:%M:%S.000Z')
+				unix_ts = datetime.to_time.to_i
+				fragment << "https://qa.dgsg-web.qa.sites.pubfactory.com"
 				fragment << request['_source']['request']['uri']
 				fragment << ","
 				fragment <<  request['_source']['request']['method']
 				fragment << ","
 				fragment <<  request['_source']['request']['ip'];
 				fragment << ","
-				fragment <<  request['_source']['@timestamp'];
+				fragment <<  unix_ts.to_s
+				#fragment <<  request['_source']['@timestamp'];
 				fragment << ","
 				fragment << @jsessionid
 				fragment << "\n"

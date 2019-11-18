@@ -1,6 +1,7 @@
 require 'thor'
 require 'elasticsearch'
 require 'json'
+require 'time'
 
 module ReplayLoad
 	class CLI < Thor
@@ -135,86 +136,9 @@ module ReplayLoad
 			end
 
 			# Field names defined at https://jmeter.apache.org/api/constant-values.html#org.apache.jmeter.protocol.http.sampler.HTTPSamplerBase
-			puts <<~EOF
-				<?xml version="1.0" encoding="UTF-8"?>
-				<jmeterTestPlan version="1.2" properties="4.0" jmeter="4.0 r1823414">
-					<hashTree>
-						<TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Plan" enabled="true">
-							<stringProp name="TestPlan.comments"/>
-							<boolProp name="TestPlan.functional_mode">false</boolProp>
-							<boolProp name="TestPlan.tearDown_on_shutdown">true</boolProp>
-							<boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
-							<elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-								<collectionProp name="Arguments.arguments"/>
-							</elementProp>
-							<stringProp name="TestPlan.user_define_classpath"/>
-						</TestPlan>
-						<hashTree>
-							<ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group" enabled="true">
-								<stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
-								<elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
-									<boolProp name="LoopController.continue_forever">true</boolProp>
-								</elementProp>
-								<stringProp name="ThreadGroup.num_threads">100</stringProp>
-								<stringProp name="ThreadGroup.ramp_time">300</stringProp>
-								<boolProp name="ThreadGroup.scheduler">false</boolProp>
-								<stringProp name="ThreadGroup.duration">900</stringProp>
-								<stringProp name="ThreadGroup.delay"></stringProp>
-							</ThreadGroup>
-							<hashTree>
-								<HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
-									<collectionProp name="HeaderManager.headers"/>
-								</HeaderManager>
-								<hashTree/>
-								<CookieManager guiclass="CookiePanel" testclass="CookieManager" testname="HTTP Cookie Manager" enabled="true">
-									<collectionProp name="CookieManager.cookies"/>
-									<boolProp name="CookieManager.clearEachIteration">true</boolProp>
-								</CookieManager>
-								<hashTree/>
-								<CacheManager guiclass="CacheManagerGui" testclass="CacheManager" testname="HTTP Cache Manager" enabled="true">
-									<boolProp name="clearEachIteration">true</boolProp>
-									<boolProp name="useExpires">true</boolProp>
-								</CacheManager>
-								<hashTree/>
-								<ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="HTTP Request Defaults" enabled="true">
-									<elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-										<collectionProp name="Arguments.arguments"/>
-									</elementProp>
-									<stringProp name="HTTPSampler.domain">www.degruyter.com</stringProp>
-									<stringProp name="HTTPSampler.port">443</stringProp>
-									<stringProp name="HTTPSampler.protocol">https</stringProp>
-									<stringProp name="HTTPSampler.contentEncoding"></stringProp>
-									<stringProp name="HTTPSampler.path"></stringProp>
-									<stringProp name="HTTPSampler.ipSource"></stringProp>
-									<boolProp name="HTTPSampler.image_parser">true</boolProp>
-									<boolProp name="HTTPSampler.concurrentDwn">true</boolProp>
-									<stringProp name="HTTPSampler.concurrentPool">10</stringProp>
-									<stringProp name="HTTPSampler.embedded_url_re">https://www\.degruyter\.com/.*</stringProp>
-									<stringProp name="HTTPSampler.connect_timeout"></stringProp>
-									<stringProp name="HTTPSampler.response_timeout"></stringProp>
-								</ConfigTestElement>
-								<hashTree/>
-								<UniformRandomTimer guiclass="UniformRandomTimerGui" testclass="UniformRandomTimer" testname="Random Session Start Delay" enabled="true">
-									<stringProp name="ConstantTimer.delay">0</stringProp>
-									<stringProp name="RandomTimer.range">5000.0</stringProp>
-								</UniformRandomTimer>
-								<hashTree/>
-								<RandomController guiclass="RandomControlGui" testclass="RandomController" testname="Random Session Selector" enabled="true">
-									<intProp name="InterleaveControl.style">1</intProp>
-								</RandomController>
-								<hashTree>
-			EOF
 			sessions.each do |session|
-#				puts session.to_jmx
 				puts session.to_csv
 			end
-			puts <<~EOF
-								</hashTree>
-							</hashTree>
-						</hashTree>
-					</hashTree>
-				</jmeterTestPlan>
-			EOF
 		end
 
 		desc 'update_sessions', 'Fix broken sessions'

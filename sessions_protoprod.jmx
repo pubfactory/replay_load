@@ -26,7 +26,12 @@
       </ThreadGroup>
       <hashTree>
         <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
-          <collectionProp name="HeaderManager.headers"/>
+          <collectionProp name="HeaderManager.headers">
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">X-Forwarded-For</stringProp>
+              <stringProp name="Header.value">${ip}</stringProp>
+            </elementProp>
+          </collectionProp>
         </HeaderManager>
         <hashTree/>
         <CookieManager guiclass="CookiePanel" testclass="CookieManager" testname="HTTP Cookie Manager" enabled="true">
@@ -52,7 +57,7 @@
         <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config" enabled="true">
           <stringProp name="delimiter">,</stringProp>
           <stringProp name="fileEncoding"></stringProp>
-          <stringProp name="filename">/Users/mbrooks/Desktop/protoprod_replay_test1.csv</stringProp>
+          <stringProp name="filename">/Users/mbrooks/Desktop/qa_reply_test1.csv</stringProp>
           <boolProp name="ignoreFirstLine">false</boolProp>
           <boolProp name="quotedData">false</boolProp>
           <boolProp name="recycle">true</boolProp>
@@ -70,7 +75,7 @@
           <stringProp name="HTTPSampler.protocol">https</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">${url}</stringProp>
-          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <stringProp name="HTTPSampler.method">${method}</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -85,10 +90,7 @@
             <stringProp name="filename"></stringProp>
             <stringProp name="parameters"></stringProp>
             <boolProp name="resetInterpreter">false</boolProp>
-            <stringProp name="script">debug();
-sampler.setMethod(vars.get(&quot;method&quot;));
-//log.info(&quot;Query String --&gt; &quot; + sampler.getHeaderManager().HEADER_AUTHORIZATION);
-</stringProp>
+            <stringProp name="script">sampler.setMethod(vars.get(&quot;method&quot;));</stringProp>
           </BeanShellPreProcessor>
           <hashTree/>
           <BeanShellTimer guiclass="TestBeanGUI" testclass="BeanShellTimer" testname="BeanShell Timer - Set Wait" enabled="true">
@@ -101,11 +103,12 @@ long ts = Long.parseLong(vars.get(&quot;ts&quot;));
 //log.info(&quot;Timestamp as long: &quot; + ts);
 
 long FirstTS=Long.parseLong(vars.get(&quot;FirstTS&quot;)); // First timestamp
+//log.info(&quot;First Timestamp from the BeanShell Timer --&gt; &quot; + FirstTS);
 
 wait=(ts-FirstTS)-(System.currentTimeMillis() - Long.parseLong(props.getProperty(&quot;TESTSTART.MS&quot;)));
 
 // DEBUG 
-log.info(&quot;ts = &quot; + ts + &quot; FirstTS = &quot; + FirstTs + &quot; wait = &quot; + wait);
+log.info(&quot;ts = &quot; + ts + &quot; FirstTS = &quot; + FirstTS + &quot; wait = &quot; + wait);
 
 return wait;</stringProp>
           </BeanShellTimer>
@@ -114,7 +117,7 @@ return wait;</stringProp>
         <AuthManager guiclass="AuthPanel" testclass="AuthManager" testname="HTTP Authorization Manager" enabled="true">
           <collectionProp name="AuthManager.auth_list">
             <elementProp name="" elementType="Authorization">
-              <stringProp name="Authorization.url">https://new.degruyter.com</stringProp>
+              <stringProp name="Authorization.url">https://qa.dgsg-web.qa.sites.pubfactory.com</stringProp>
               <stringProp name="Authorization.username">dgsg</stringProp>
               <stringProp name="Authorization.password">dgsg2017</stringProp>
               <stringProp name="Authorization.domain"></stringProp>
