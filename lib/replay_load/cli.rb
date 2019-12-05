@@ -7,7 +7,7 @@ module ReplayLoad
 		def self.exit_on_failure?; true; end
 		
 		@@start_date = '2019-03-01T12:00:00.000Z'
-		@@end_date   = '2019-03-01T14:00:00.000Z'
+		@@end_date   = '2019-03-01T12:20:00.000Z'
 
 		desc 'health', 'get cluster health'			
 		def health
@@ -17,43 +17,36 @@ module ReplayLoad
 		desc 'get_all_sessions', 'Get all sessions'
 		def get_all_sessions
 			response = ReplayLoad.es_client.search(
-				index: 'pubfactory-requests-2019.03.01',
 				size: 10000,
 				body: {
-					query: {
-						bool: {
-                                                        must: [{ 
-								range: {
-                                                        	 	'@timestamp' => {
-                                                                		gte: @@start_date,
-                                                               			lte: @@end_date,
-                                                       			},
-                                               			},
-								},
-								{ exists: {
-            								field: 'session'
-        								}							
-								}
-						    	],
-                                                        must_not: [
-                                                               { regexp: { 'request.uri.keyword' => '.*\\.(png|jpg|gif|ico|css|js)' } },
-                                                        ],
-                                                },
-					},
-					#aggs: {
-					#	sessions: {
-					#		terms: {
-					#			field: 'session.jsessionid.keyword',
-					#			size: 100000,
-					#		},
-					#	},
-					#},
+					"query": {
+      						"bool": {
+        						"must": [
+          							{ "range": { "@timestamp" => {
+                  							"gte": @@start_date,
+                  							"lte": @@end_date
+                							}
+            							   }	
+       							 	},
+								{
+      									"terms": {
+           									"_index" => ["pubfactory-requests-2019.03.01"] 
+        								}
+      								},
+        							{ "exists": {"field" => "session.jsessionid"}}
+        						],
+        						"must_not": [{
+            							"regexp": { 
+              								"request.uri.keyword" => '.*\\.(png|jpg|gif|ico|css|js)'
+              							} 
+        						}]
+      						}
+    					}				
 				}
 			)
 			sessions = []
 			#print response['hits']['total']
 			response['hits']['hits'].each do |hit|
-				if hit['_source']['session']['jsessionid']
 					fragment = ""
 					initial_timestamp = hit['_source']['@timestamp'];
                                 	datetime = DateTime.strptime(initial_timestamp,'%Y-%m-%dT%H:%M:%S.000Z')
@@ -74,7 +67,6 @@ module ReplayLoad
                                 	fragment << "\n"
                         
 	                       		print fragment
-				end
 			end
 			#response['aggregations']['sessions']['buckets'].sort_by{|bucket| bucket['key']}.each do |bucket|
 			#	sessions << Session.new(jsessionid: bucket['key'], index: 'pubfactory-requests-2019.03.01')
