@@ -19,6 +19,7 @@ module ReplayLoad
 			response = ReplayLoad.es_client.search(
 				size: 10000,
 				body: {
+					"sort" => { "@timestamp" => "asc" },
 					"query": {
       						"bool": {
         						"must": [
