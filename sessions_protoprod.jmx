@@ -18,8 +18,8 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <intProp name="LoopController.loops">-1</intProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">1</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <stringProp name="ThreadGroup.num_threads">2</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">0</stringProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
         <stringProp name="ThreadGroup.duration">900</stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
@@ -51,7 +51,8 @@
         <OnceOnlyController guiclass="OnceOnlyControllerGui" testclass="OnceOnlyController" testname="Once Only Controller" enabled="true"/>
         <hashTree>
           <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="One Time Set FirstTS" enabled="true">
-            <stringProp name="BeanShellSampler.query">vars.put(&quot;FirstTS&quot;,vars.get(&quot;ts&quot;));</stringProp>
+            <stringProp name="BeanShellSampler.query">vars.put(&quot;FirstTS&quot;,vars.get(&quot;unix_ts&quot;));
+log.info(&quot;Starting Time : &quot; + vars.get(&quot;unix_ts&quot;));</stringProp>
             <stringProp name="BeanShellSampler.filename"></stringProp>
             <stringProp name="BeanShellSampler.parameters"></stringProp>
             <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
@@ -61,13 +62,13 @@
         <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config" enabled="true">
           <stringProp name="delimiter">,</stringProp>
           <stringProp name="fileEncoding"></stringProp>
-          <stringProp name="filename">/Users/mbrooks/Desktop/qa_testrun.csv</stringProp>
+          <stringProp name="filename">/Users/mbrooks/Documents/git/replay_load/lib/replay_load/smallset_100.csv</stringProp>
           <boolProp name="ignoreFirstLine">false</boolProp>
           <boolProp name="quotedData">false</boolProp>
           <boolProp name="recycle">false</boolProp>
           <stringProp name="shareMode">shareMode.all</stringProp>
           <boolProp name="stopThread">true</boolProp>
-          <stringProp name="variableNames">url,method,ip,ts,session</stringProp>
+          <stringProp name="variableNames">url,method,ip,unix_ts,ts,session</stringProp>
         </CSVDataSet>
         <hashTree/>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="${url}" enabled="true">
@@ -92,11 +93,38 @@
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
         </HTTPSamplerProxy>
         <hashTree>
-          <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor - Set Method" enabled="true">
+          <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShellPreProcessor - Set Method and Session" enabled="true">
             <stringProp name="filename"></stringProp>
             <stringProp name="parameters"></stringProp>
             <boolProp name="resetInterpreter">false</boolProp>
-            <stringProp name="script">sampler.setMethod(vars.get(&quot;method&quot;));</stringProp>
+            <stringProp name="script">import SessionInfoMap;
+import org.apache.jmeter.protocol.http.control .CookieManager;
+import org.apache.jmeter.protocol.http.control.Cookie;
+
+sampler.setMethod(vars.get(&quot;method&quot;));
+
+String awsalbSessionId;
+String originalSessionVal = vars.get(&quot;session&quot;);
+
+// Check the session info map singleton to see if there is a session entry from the original csv file
+// If so, we set back to the server the corresponding current jsession via Set-Cookie header
+if(SessionInfoMap.containsKey(originalSessionVal)) {
+    awsalbSessionId = SessionInfoMap.get(originalSessionVal);
+    log.info(&quot;======= ORIGINAL SESSION ID ======= : &quot; + originalSessionVal);
+    
+    // Set the cookie with the cached jsessionid that maps to the original session id from the request log
+   Cookie cookie = new Cookie(&quot;AWSALB&quot;,awsalbSessionId,&quot;dg.dgsg-web.qa.sites.pubfactory.com&quot;,&quot;/&quot;, false,-1);
+	CookieManager manager = sampler.getCookieManager();
+	log.info(&quot;Setting Cookie to use AWSALB &quot; + awsalbSessionId);
+	log.info(&quot;Thread corresponds to original session: &quot; + originalSessionVal);
+	manager.add(cookie);
+	//manager.save(cookie);
+	// The new mapping will be added after the request is sent in the post-processor
+}
+else {
+	log.info(&quot;========= WE SHOULD USE THE INCOMING AWSALB session cookie AND HOPEFULLY SET IT IN MAP&quot;);
+}
+</stringProp>
           </BeanShellPreProcessor>
           <hashTree/>
           <BeanShellTimer guiclass="TestBeanGUI" testclass="BeanShellTimer" testname="BeanShell Timer - Set Wait" enabled="true">
@@ -105,7 +133,7 @@
             <boolProp name="resetInterpreter">false</boolProp>
             <stringProp name="script">long wait=0;
 
-long ts = Long.parseLong(vars.get(&quot;ts&quot;));
+long ts = Long.parseLong(vars.get(&quot;unix_ts&quot;));
 //log.info(&quot;Timestamp as long: &quot; + ts);
 
 long FirstTS=Long.parseLong(vars.get(&quot;FirstTS&quot;)); // First timestamp
@@ -114,10 +142,38 @@ long FirstTS=Long.parseLong(vars.get(&quot;FirstTS&quot;)); // First timestamp
 wait=(ts-FirstTS)-(System.currentTimeMillis() - Long.parseLong(props.getProperty(&quot;TESTSTART.MS&quot;)));
 
 // DEBUG 
-log.info(&quot;ts = &quot; + ts + &quot; FirstTS = &quot; + FirstTS + &quot; wait = &quot; + wait);
+wait = 1000; //1000 ms
+log.info(&quot;Time stamp from replay log = &quot; + ts + &quot; FirstTS = &quot; + FirstTS + &quot; Total Wait Time = &quot; + wait + &quot; milliseconds&quot;);
 
 return wait;</stringProp>
           </BeanShellTimer>
+          <hashTree/>
+          <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Extract session id" enabled="true">
+            <stringProp name="RegexExtractor.useHeaders">true</stringProp>
+            <stringProp name="RegexExtractor.refname">jsessionid</stringProp>
+            <stringProp name="RegexExtractor.regex">Set-Cookie\s*:\s*AWSALB=([^;]*);</stringProp>
+            <stringProp name="RegexExtractor.template">$1$</stringProp>
+            <stringProp name="RegexExtractor.default">NOTFOUND</stringProp>
+            <stringProp name="RegexExtractor.match_number">1</stringProp>
+          </RegexExtractor>
+          <hashTree/>
+          <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShellPostProcessor - Add new session map entry" enabled="true">
+            <stringProp name="filename"></stringProp>
+            <stringProp name="parameters"></stringProp>
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="script">import SessionInfoMap;
+
+String originalSessionVal = vars.get(&quot;session&quot;);
+
+// Check the session info map singleton to see if there is a session entry from the original csv file
+// If not, we add the mapping 
+if(!SessionInfoMap.containsKey(originalSessionVal)) {
+	String newJsessionId = vars.get(&quot;jsessionid&quot;);
+	SessionInfoMap.put(originalSessionVal,newJsessionId);
+	log.info(&quot;------Setting New Mapping ------&gt; &quot; + newJsessionId + &quot; ==== MAPS TO : &quot; + originalSessionVal);
+}
+</stringProp>
+          </BeanShellPostProcessor>
           <hashTree/>
         </hashTree>
         <ResultCollector guiclass="TableVisualizer" testclass="ResultCollector" testname="View Results in Table" enabled="true">
@@ -195,43 +251,29 @@ return wait;</stringProp>
         <stringProp name="filename"></stringProp>
       </ResultCollector>
       <hashTree/>
-      <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report" enabled="true">
-        <boolProp name="ResultCollector.error_logging">false</boolProp>
-        <objProp>
-          <name>saveConfig</name>
-          <value class="SampleSaveConfiguration">
-            <time>true</time>
-            <latency>true</latency>
-            <timestamp>true</timestamp>
-            <success>true</success>
-            <label>true</label>
-            <code>true</code>
-            <message>true</message>
-            <threadName>true</threadName>
-            <dataType>true</dataType>
-            <encoding>false</encoding>
-            <assertions>true</assertions>
-            <subresults>true</subresults>
-            <responseData>false</responseData>
-            <samplerData>false</samplerData>
-            <xml>false</xml>
-            <fieldNames>true</fieldNames>
-            <responseHeaders>false</responseHeaders>
-            <requestHeaders>false</requestHeaders>
-            <responseDataOnError>false</responseDataOnError>
-            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
-            <assertionsResultsToSave>0</assertionsResultsToSave>
-            <bytes>true</bytes>
-            <sentBytes>true</sentBytes>
-            <url>true</url>
-            <threadCounts>true</threadCounts>
-            <idleTime>true</idleTime>
-            <connectTime>true</connectTime>
-          </value>
-        </objProp>
-        <stringProp name="filename"></stringProp>
-      </ResultCollector>
-      <hashTree/>
+      <SetupThreadGroup guiclass="SetupThreadGroupGui" testclass="SetupThreadGroup" testname="setUp Thread Group" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </SetupThreadGroup>
+      <hashTree>
+        <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="BeanShell Sampler" enabled="true">
+          <stringProp name="BeanShellSampler.query">import SessionInfoMap;
+
+SessionInfoMap.clear();</stringProp>
+          <stringProp name="BeanShellSampler.filename"></stringProp>
+          <stringProp name="BeanShellSampler.parameters"></stringProp>
+          <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
+        </BeanShellSampler>
+        <hashTree/>
+      </hashTree>
     </hashTree>
   </hashTree>
 </jmeterTestPlan>

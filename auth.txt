@@ -1,0 +1,2 @@
+# JMeter generated Authorization file
+dg.dgsg-web.qa.sites.pubfactory.com	dgsg	dgsg2017			BASIC
