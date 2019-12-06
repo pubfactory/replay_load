@@ -38,8 +38,7 @@ module ReplayLoad
         						],
         						"must_not": [{
             							"regexp": { 
-              								"request.uri.keyword" => '.*\\.(png|jpg|gif|ico|css|js)'
-              							} 
+              								"request.uri.keyword" => ".*\\.(png|jpg|gif|ico|css|js)|.*progressivedisplay.*"}
         						}]
       						}
     					}				
